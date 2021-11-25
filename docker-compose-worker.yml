@@ -1,0 +1,14 @@
+version: "3.6"
+
+services:
+  worker:
+    image: ghcr.io/kpott/homemonitor/worker:main
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - RabbitMQ__Uri=rabbitmq://rabbitmq:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+      - AppSettings__Location=Family Room
+    networks:
+      - homemonitor

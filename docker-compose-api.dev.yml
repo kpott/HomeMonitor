@@ -1,0 +1,17 @@
+version: "3.6"
+
+services:
+  api:
+    image: ghcr.io/kpott/homemonitor/api:dev
+    build:
+      context: ./src
+      dockerfile: HomeMonitor.Api/Dockerfile
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=Passw0rd
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    volumes:
+      - ~/.aspnet/https:/https/:ro
+    networks:
+      - homemonitor

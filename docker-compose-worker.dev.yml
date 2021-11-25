@@ -1,0 +1,10 @@
+version: "3.6"
+
+services:
+  worker:
+    image: ghcr.io/kpott/homemonitor/worker:dev
+    build:
+      context: ./src
+      dockerfile: HomeMonitor.Worker/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

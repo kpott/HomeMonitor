@@ -1,0 +1,20 @@
+version: "3.6"
+
+services:
+  api:
+    image: ghcr.io/kpott/homemonitor/api:main
+    build:
+      context: ./src
+      dockerfile: HomeMonitor.Api/Dockerfile
+    restart: always
+    ports:
+      - "5000:80"
+      - "5001:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - RabbitMQ__Uri=rabbitmq://rabbitmq:5672
+      - RabbitMQ__Username=guest
+      - RabbitMQ__Password=guest
+    networks:
+      - homemonitor

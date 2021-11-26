@@ -13,8 +13,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((ctx, lc) => lc
     .WriteTo.Console(new JsonFormatter()));
 
-var rabbitMqOptions = new HomeMonitor.Api.Options.RabbitMQ();
-builder.Configuration.GetSection(HomeMonitor.Api.Options.RabbitMQ.ConfigurationSectionName).Bind(rabbitMqOptions);
+var rabbitMqOptions = new HomeMonitor.Api.Options.RabbitMqSettings();
+builder.Configuration.GetSection(HomeMonitor.Api.Options.RabbitMqSettings.ConfigurationSectionName)
+    .Bind(rabbitMqOptions);
+
+builder.Services.AddOptions<InfluxDbSettings>()
+    .Bind(builder.Configuration.GetSection(InfluxDbSettings.ConfigurationSectionName));
 
 builder.Services.AddAutoMapper(typeof(TemperatureProfile));
 

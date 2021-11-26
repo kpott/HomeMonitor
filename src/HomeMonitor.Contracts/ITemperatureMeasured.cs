@@ -2,9 +2,9 @@
 
 public interface ITemperatureMeasured
 {
-    public Guid Id { get;  }
+    public Guid Id { get; }
     public string Location { get; }
-    public decimal Temperature { get; }
-    public decimal Humidity { get; }
+    public double Temperature { get; }
+    public double Humidity { get; }
     public DateTimeOffset RecordedAt { get; }
 }

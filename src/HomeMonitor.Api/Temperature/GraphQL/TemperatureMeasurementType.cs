@@ -15,7 +15,7 @@ public class TemperatureMeasurementType : ObjectType<TemperatureMeasurement>
         descriptor
             .Field(f => f.Temperature)
             .Type<DecimalType>();
-        
+
         descriptor
             .Field(f => f.Humidity)
             .Type<DecimalType>();

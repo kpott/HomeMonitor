@@ -1,20 +1,14 @@
 version: "3.6"
 
 services:
-  api:
-    image: ghcr.io/kpott/homemonitor/api:main
+  mockworker:
+    # image: ghcr.io/kpott/homemonitor/mockworker:main
     build:
       context: ./src
-      dockerfile: HomeMonitor.Api/Dockerfile
+      dockerfile: HomeMonitor.MockWorker/Dockerfile
     restart: always
-    ports:
-      - "5000:80"
-      - "5001:443"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - InfluxDb__Uri=http://influxdb:8086
-      - InfluxDb__Token=homemonitor
       - RabbitMq__Uri=rabbitmq://rabbitmq:5672
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest

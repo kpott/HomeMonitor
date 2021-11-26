@@ -13,20 +13,44 @@ services:
       - rabbit-log:/var/log/rabbitmq
     networks:
       - homemonitor
-  # postgres:
-  #   image: postgres
-  #   ports:
-  #    - "5432:5432"
-  #   restart: always
-  #   environment:
-  #     POSTGRES_PASSWORD: example
-  #     PGDATA: /var/lib/postgresql/data/pgdata
-  #   volumes:
-  #     - postgres:/var/lib/postgresql/data/pgdata
-  #   networks:
-  #     - homemonitor
+  grafana:
+    image: grafana/grafana:8.2.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=guest
+      - GF_SECURITY_ADMIN_PASSWORD=guest
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: always
+    expose:
+      - 3000
+    networks:
+      - homemonitor
+  influxdb:
+    image: influxdb:2.1.1
+    ports:
+      - 8086:8086
+    volumes:
+      - influx-data:/var/lib/influxdb2
+      - influx-config:/etc/influxdb2
+    environment:
+      - influx-data:/var/lib/influxdb2
+      - influx-config:/etc/influxdb2
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=my-user
+      - DOCKER_INFLUXDB_INIT_PASSWORD=my-password
+      - DOCKER_INFLUXDB_INIT_ORG=home
+      - DOCKER_INFLUXDB_INIT_BUCKET=homemonitor
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=homemonitor
+    restart: always
+    networks:
+      - homemonitor
 volumes:
-  postgres:
+  influx-data:
+  influx-config:
+  grafana-data:
   rabbit-data:
   rabbit-log:
 networks:

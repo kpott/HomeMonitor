@@ -6,9 +6,14 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - RabbitMQ__Uri=rabbitmq://rabbitmq:5672
-      - RabbitMQ__Username=guest
-      - RabbitMQ__Password=guest
-      - AppSettings__Location=Family Room
+      - RabbitMq__Uri=rabbitmq://rabbitmq:5672
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - Sensor__Location=Master Bedroom
+      - Sensor__DelayBetweenMeasurementsMs=60000
+      - Sensor__I2CBusId=1
+      - Sensor__I2CDeviceAddress=40
+    devices:
+      - /dev/i2c-1:/dev/i2c-1
     networks:
       - homemonitor

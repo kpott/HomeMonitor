@@ -8,15 +8,15 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<BusWorker>();
         services.AddHostedService<TemperatureMonitor>();
 
-        services.AddOptions<AppSettings>()
-            .Bind(context.Configuration.GetSection(AppSettings.ConfigurationSectionName));
+        services.AddOptions<SensorSettings>()
+            .Bind(context.Configuration.GetSection(SensorSettings.ConfigurationSectionName));
 
-        var rabbitMqOptions = new HomeMonitor.Worker.Options.RabbitMQ();
-        context.Configuration.GetSection(HomeMonitor.Worker.Options.RabbitMQ.ConfigurationSectionName).Bind(rabbitMqOptions);
+        var rabbitMqOptions = new HomeMonitor.Worker.Options.RabbitMqSettings();
+        context.Configuration.GetSection(HomeMonitor.Worker.Options.RabbitMqSettings.ConfigurationSectionName)
+            .Bind(rabbitMqOptions);
 
         services.AddMassTransit(serviceCollectionConfigurator =>
         {
-      
             serviceCollectionConfigurator.AddBus(serviceProvider =>
                 Bus.Factory.CreateUsingRabbitMq(busFactoryConfigurator =>
                 {
@@ -27,7 +27,6 @@ var host = Host.CreateDefaultBuilder(args)
                     });
                 }));
         });
-        
     })
     .Build();
 

@@ -1,25 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-HomeMonitor.Worker-3C4D2C16-2880-4F70-9AC0-20A2D0120E03</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-HomeMonitor.Worker-3C4D2C16-2880-4F70-9AC0-20A2D0120E03</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MassTransit" Version="7.2.4" />
-    <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.2.4" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Iot.Device.Bindings" Version="1.5.0"/>
+        <PackageReference Include="MassTransit" Version="7.2.4"/>
+        <PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.2.4"/>
+        <PackageReference Include="MassTransit.RabbitMQ" Version="7.2.4"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\HomeMonitor.Contracts\HomeMonitor.Contracts.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\HomeMonitor.Contracts\HomeMonitor.Contracts.csproj"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Microsoft.Extensions.Options.DataAnnotations" />
-  </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Microsoft.Extensions.Options.DataAnnotations"/>
+    </ItemGroup>
 </Project>

@@ -1,10 +1,10 @@
-using HomeMonitor.Api;
 using HomeMonitor.Api.Options;
 using HomeMonitor.Api.Temperature;
 using HomeMonitor.Api.Temperature.GraphQL;
 using HomeMonitor.Api.Temperature.MassTransit;
 using MassTransit;
 using MassTransit.JobService.Configuration;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Formatting.Json;
 
@@ -13,20 +13,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((ctx, lc) => lc
     .WriteTo.Console(new JsonFormatter()));
 
-var rabbitMqOptions = new HomeMonitor.Api.Options.RabbitMqSettings();
-builder.Configuration.GetSection(HomeMonitor.Api.Options.RabbitMqSettings.ConfigurationSectionName)
-    .Bind(rabbitMqOptions);
+builder.Services.AddOptions<RabbitMqSettings>()
+    .Bind(builder.Configuration.GetSection(RabbitMqSettings.ConfigurationSectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 
 builder.Services.AddOptions<InfluxDbSettings>()
-    .Bind(builder.Configuration.GetSection(InfluxDbSettings.ConfigurationSectionName));
+    .Bind(builder.Configuration.GetSection(InfluxDbSettings.ConfigurationSectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+var rabbitMqSettings = new RabbitMqSettings();
+builder.Configuration.GetSection(RabbitMqSettings.ConfigurationSectionName)
+    .Bind(rabbitMqSettings);
 
 builder.Services.AddAutoMapper(typeof(TemperatureProfile));
 
 builder.Services
     .AddGraphQLServer()
     .AddQueryType<TemperatureQueryType>()
-    .AddSubscriptionType(d => d.Name("Subscription"))
-    .AddTypeExtension<TemperatureSubscriptions>()
+    .AddSubscriptionType<TemperatureSubscriptions>()
     .AddInMemorySubscriptions();
 
 builder.Services.AddMassTransit(x =>
@@ -37,10 +43,10 @@ builder.Services.AddMassTransit(x =>
 
         x.UsingRabbitMq((context, cfg) =>
         {
-            cfg.Host(rabbitMqOptions.Uri, configurator =>
+            cfg.Host(rabbitMqSettings.Uri, configurator =>
             {
-                configurator.Username(rabbitMqOptions.Username);
-                configurator.Password(rabbitMqOptions.Password);
+                configurator.Username(rabbitMqSettings.Username);
+                configurator.Password(rabbitMqSettings.Password);
             });
             var options = new ServiceInstanceOptions();
 
@@ -50,13 +56,6 @@ builder.Services.AddMassTransit(x =>
     .AddMassTransitHostedService();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-}
-
-app.UseHttpsRedirection();
 
 app
     .UseRouting()

@@ -1,7 +1,6 @@
-using System.Device.I2c;
 using HomeMonitor.Contracts;
 using HomeMonitor.Worker.Options;
-using Iot.Device.Si7021;
+using HomeMonitor.Worker.Sensors;
 using MassTransit;
 using Microsoft.Extensions.Options;
 
@@ -10,47 +9,40 @@ namespace HomeMonitor.Worker;
 public class TemperatureMonitor : BackgroundService
 {
     private readonly ILogger<TemperatureMonitor> _logger;
-    private readonly SensorSettings _sensorSettings;
+    private readonly MonitorSettings _monitorSettings;
     private readonly IBus _bus;
+    private readonly ITemperatureAndHumiditySensor _sensor;
 
-    public TemperatureMonitor(ILogger<TemperatureMonitor> logger, IOptions<SensorSettings> appSettingsOptions, IBus bus)
+    public TemperatureMonitor(ILogger<TemperatureMonitor> logger, IOptions<MonitorSettings> monitorOptions, IBus bus,
+        ITemperatureAndHumiditySensor sensor)
     {
         _logger = logger;
-        _sensorSettings = appSettingsOptions.Value;
+        _monitorSettings = monitorOptions.Value;
         _bus = bus;
+        _sensor = sensor;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var i2CConnectionSettings =
-            new I2cConnectionSettings(_sensorSettings.I2CBusId, _sensorSettings.I2CDeviceAddress);
-
-        _logger.LogInformation("Preparing to make I2C connection {BusId} {DeviceAddress}", _sensorSettings.I2CBusId,
-            _sensorSettings.I2CDeviceAddress);
-
-        using var i2CDevice = I2cDevice.Create(i2CConnectionSettings);
-        using var sensor = new Si7021(i2CDevice);
-
         while (!stoppingToken.IsCancellationRequested)
         {
+            var reading = await _sensor.ReadAsync();
+
             var temperatureMeasurement = new
             {
                 Id = NewId.NextGuid(),
-                Location = _sensorSettings.Location,
-                Temperature = sensor.Temperature.DegreesFahrenheit,
-                Humidity = sensor.Humidity.Percent,
+                _monitorSettings.Location,
+                reading.Temperature,
+                reading.Humidity,
                 RecordedAt = DateTimeOffset.Now
             };
-
-            _logger.LogInformation("Obtained Temperature Measurement {TemperatureMeasurement}",
-                temperatureMeasurement);
 
             await _bus.Publish<ITemperatureMeasured>(temperatureMeasurement, stoppingToken);
 
             _logger.LogInformation("Published Temperature Measurement and waiting {SensorDelayMs}",
-                _sensorSettings.DelayBetweenMeasurementsMs);
+                _monitorSettings.DelayBetweenMeasurementsMs);
 
-            await Task.Delay(_sensorSettings.DelayBetweenMeasurementsMs, stoppingToken);
+            await Task.Delay(_monitorSettings.DelayBetweenMeasurementsMs, stoppingToken);
         }
     }
 }

@@ -9,10 +9,11 @@ services:
       - RabbitMq__Uri=rabbitmq://rabbitmq:5672
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest
-      - Sensor__Location=Master Bedroom
-      - Sensor__DelayBetweenMeasurementsMs=60000
-      - Sensor__I2CBusId=1
-      - Sensor__I2CDeviceAddress=40
+      - Monitor__Location=Master Bedroom
+      - Monitor__DelayBetweenMeasurementsMs=300000
+      - Monitor__SensorType=bme280
+      - I2C__BusId=1
+      - I2C__DeviceAddress=40
     devices:
       - /dev/i2c-1:/dev/i2c-1
     networks:

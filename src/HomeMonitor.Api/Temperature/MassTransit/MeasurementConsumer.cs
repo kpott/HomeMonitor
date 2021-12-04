@@ -29,7 +29,7 @@ public class MeasurementConsumer : IConsumer<ITemperatureMeasured>
 
     public async Task Consume(ConsumeContext<ITemperatureMeasured> context)
     {
-        using var client = InfluxDBClientFactory.Create(_influxDbSettings.Uri.ToString(), _influxDbSettings.Token);
+        using var client = InfluxDBClientFactory.Create(_influxDbSettings.Uri?.ToString(), _influxDbSettings.Token);
         using var write = client.GetWriteApi();
 
         var temperatureMeasurement = _mapper.Map<TemperatureMeasurement>(context.Message);

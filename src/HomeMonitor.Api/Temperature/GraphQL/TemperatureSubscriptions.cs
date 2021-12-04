@@ -1,6 +1,5 @@
 namespace HomeMonitor.Api.Temperature.GraphQL;
 
-[ExtendObjectType(Name = "Subscription")]
 public class TemperatureSubscriptions
 {
     [Subscribe]
